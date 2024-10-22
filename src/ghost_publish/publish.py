@@ -1,4 +1,4 @@
-import logging
+# import logging
 import sys, os
 from typing import Optional
 from pathlib import Path
@@ -9,35 +9,24 @@ import nbformat
 import json
 
 from dataclasses import dataclass
-from traitlets import log
+# from traitlets import log
 from traitlets.config import Config
 
 from ghost_publish.exporters.ghost_html_exporter import GhostHTMLExporter
+from ghost_publish.shared import get_logger, get_token
 
 from nbconvert.writers.files import FilesWriter
 
 import requests
-import jwt
+# import jwt
 from datetime import datetime as date
 
-
-def get_logger():
-  # import a logger and send it to stdout
-  logger = log.get_logger()
-
-  handler_names = [ handler.get_name() for handler in logger.handlers ]
-  if __name__ not in handler_names:
-    handler = logging.StreamHandler(sys.stdout)
-    handler.set_name(__name__)
-    logger.addHandler(handler)
-
-  return logger
 
 @dataclass
 class ProgramArgs:
   notebook: str
   build: str
-  _ghost_publish_path: str
+  _ghost_data_path: str
   ghost_admin_api_key: str
   post_title: Optional[str] = None
   post_date: Optional[str] = None
@@ -55,14 +44,10 @@ class ProgramArgs:
     else:
       prefix = "https://dlennon.org/posts/"
     return prefix
-
-  # @property
-  # def ghost_data_path(self):
-  #   return Path(self._ghost_data_path)
-  
+ 
   @property
   def build_path(self):
-    return Path(self._ghost_publish_path) / "staging/notebooks"
+    return Path(self._ghost_data_path) / "staging/notebooks"
   
   @property
   def output_path(self):
@@ -74,7 +59,7 @@ def get_program_args(supplied_args = None):
   )
   parser.add_argument("notebook")
   parser.add_argument("--build", choices = ['local', 'dev', 'prod'], default = 'local')
-  parser.add_argument("--ghost-publish-path", default = os.environ["GHOST_PUBLISH_PATH"], dest = "_ghost_publish_path")
+  parser.add_argument("--ghost-data-path", default = os.environ["GHOST_DATA_PATH"], dest = "_ghost_data_path")
   parser.add_argument("--ghost-admin-api-key", default = os.environ["GHOST_ADMIN_API_KEY"])
   parser.add_argument("--post-title")
   parser.add_argument("--post-date")
@@ -89,7 +74,10 @@ def get_config(args : ProgramArgs):
 
   return c
 
-def convert(config: Config, args : ProgramArgs):
+def process(config: Config, args : ProgramArgs):
+  """
+  Read the jupyter notebook, apply the GhostHTMLExporter exporter, write the HTML output.
+  """
   # read the notebook
   with open(args.build_path / args.notebook_file, "r") as f:
     nbdata = f.read()
@@ -109,45 +97,7 @@ def convert(config: Config, args : ProgramArgs):
 
   return (body, resources)
 
-def get_token(args : ProgramArgs):
-  # Split the key into ID and SECRET
-  id, secret = args.ghost_admin_api_key.split(':')
-
-  # Prepare header and payload
-  iat = int(date.now().timestamp())
-
-  header = {'alg': 'HS256', 'typ': 'JWT', 'kid': id}
-  payload = {
-      'iat': iat,
-      'exp': iat + 5 * 60,
-      'aud': '/admin/'
-  }
-
-  # Create the token (including decoding secret)
-  token = jwt.encode(payload, bytes.fromhex(secret), algorithm='HS256', headers=header)
-
-  return token
-
-
-if __name__ == '__main__':
-  from ghost_publish.publish import *
-  import shlex
-
-  # logger = get_logger()
-  # logger.setLevel(10)  
-
-  # test_args = shlex.split("hessenberg --post-title 'Hello World' --post-date 2020-01-01 ")
-  args = get_program_args()
-  config = get_config(args)
-
-  print("\n".join(sys.path))
-  print(repr(config))
-
-  body, resources = convert(config, args)
-
-  if args.build == "local":
-    sys.exit(0)
-
+def publish(config: Config, args : ProgramArgs, body, resources):
   # postprocess yaml header metadata
   header = resources['yaml_header']
 
@@ -173,15 +123,59 @@ if __name__ == '__main__':
   }
 
   # set up the call to the ghost admin api
-  token = get_token(args) 
-  url = 'http://localhost:2368/ghost/api/admin/posts/?source=html'
-  headers = {'Authorization': 'Ghost {}'.format(token)}
-  body = { 'posts': [ post ] }
-  r = requests.post(url, json=body, headers=headers)
+  token = get_token(args.ghost_admin_api_key) 
+  r = requests.post(
+    'https://dlennon.org/posts/ghost/api/admin/posts/?source=html',
+    headers = {
+      'Authorization': 'Ghost {}'.format(token)
+    },
+    json = { 
+      'posts': [ post ] 
+    }
+  )
   r.raise_for_status()
-  
-  # j = r.json()
-  # post_id = j['posts'][0]['id']
+
+
+# def get_token(args : ProgramArgs):
+#   # Split the key into ID and SECRET
+#   id, secret = args.ghost_admin_api_key.split(':')
+
+#   # Prepare header and payload
+#   iat = int(date.now().timestamp())
+
+#   header = {'alg': 'HS256', 'typ': 'JWT', 'kid': id}
+#   payload = {
+#       'iat': iat,
+#       'exp': iat + 5 * 60,
+#       'aud': '/admin/'
+#   }
+
+#   # Create the token (including decoding secret)
+#   token = jwt.encode(payload, bytes.fromhex(secret), algorithm='HS256', headers=header)
+
+#   return token
+
+
+if __name__ == '__main__':
+  from ghost_publish.publish import *
+  import shlex
+
+  # logger = get_logger()
+  # logger.setLevel(10)  
+
+  # args = get_program_args(shlex.split("censoring"))
+  args = get_program_args()
+  config = get_config(args)
+
+  print("\n".join(sys.path))
+  print(repr(config))
+
+  body, resources = process(config, args)
+
+  if args.build == "local":
+    sys.exit(0)
+
+  publish(config, args, body, resources)
 
   # # delete post!
   # token = get_token(args) 

@@ -6,8 +6,8 @@ name = "pypi"
 [packages]
 build = "*"
 requests = "*"
-jwt = "*"
 pyjwt = "*"
+setuptools = "*"
 
 [dev-packages]
 
