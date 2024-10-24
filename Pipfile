@@ -8,6 +8,7 @@ build = "*"
 requests = "*"
 pyjwt = "*"
 setuptools = "*"
+pandocfilters = "*"
 
 [dev-packages]
 

@@ -6,7 +6,7 @@ dependencies = [
 ]
 
 [project.entry-points."nbconvert.exporters"]
-ghost = "ghost_publish.exporters.ghost_html_exporter:GhostHTMLExporter"
+ghost = "ghost_publish.nbconvert.exporters.ghost_html_exporter:GhostHTMLExporter"
 
 [build-system]
 requires = [
