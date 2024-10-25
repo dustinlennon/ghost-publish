@@ -1,7 +1,6 @@
 import requests
-import json
 from nbconvert.writers import WriterBase
-from ghost_publish.shared import get_token, make_slug
+from ghost_publish.shared import get_token
 
 class GhostWriter(WriterBase):
 

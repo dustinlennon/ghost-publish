@@ -6,7 +6,7 @@ dependencies = [
 ]
 
 [project.entry-points."nbconvert.exporters"]
-ghost = "ghost_publish.exporters.ghost_html_exporter:GhostHTMLExporter"
+ghost = "ghost_publish.nbconvert.exporters.ghost_html_exporter:GhostHTMLExporter"
 
 [build-system]
 requires = [
@@ -14,3 +14,7 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
+[project.scripts]
+ghostpub-relink = "ghost_publish.scripts.relink_image_filter:main"
+ghostpub-split = "ghost_publish.scripts.split_yaml:main"
+ghostpub-post = "ghost_publish.scripts.publish:main"
