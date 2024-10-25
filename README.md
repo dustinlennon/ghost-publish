@@ -2,7 +2,7 @@
 ghost-publish
 ====
 
-`ghost_publish` is a python package that provides scripts and nbconvert support to the Ghost blog.  These tools facilitate access to the admin API, specifically when publishing posts.
+`ghost_publish` is a python package that provides scripts and nbconvert support to my [ghost blog](https://dlennon.org).  These tools facilitate access to the admin API, specifically when publishing posts.
 
 
 setup
