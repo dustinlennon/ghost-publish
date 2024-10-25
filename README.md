@@ -10,12 +10,12 @@ setup
 
 When setting things up, you'll likely need to set a few environment variables:
 
-  GHOST_ADMIN_API_KEY=<ghost_admin_api_key>
-  GHOST_ADMIN_API_URL=<ghost_admin_api_url>
+    GHOST_ADMIN_API_KEY=<ghost_admin_api_key>
+    GHOST_ADMIN_API_URL=<ghost_admin_api_url>
 
-  # PYTHONPATH includes the package source code and the site-packages; useful for external apps that might leverage a dotenv file.
-  GHOST_PUBLISH_PATH=<this directory>
-  PYTHONPATH=${GHOST_PUBLISH_PATH}/src:${GHOST_PUBLISH_PATH}/.venv/lib/python3.11/site-packages
+    # PYTHONPATH includes the package source code and the site-packages; useful for external apps that might leverage a dotenv file.
+    GHOST_PUBLISH_PATH=<this directory>
+    PYTHONPATH=${GHOST_PUBLISH_PATH}/src:${GHOST_PUBLISH_PATH}/.venv/lib/python3.11/site-packages
 
 I have a shared jupyter / ipython installation on my dev machine that loads up dotenv files when available.  For those, as well as vscode, copying the `~/Workspace/vscode_repl.pth` file into the virtualenv site-packages directory means that these applications will augment PYTHONPATH accordingly.
 
