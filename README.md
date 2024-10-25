@@ -1,68 +1,29 @@
 
-Setup
+ghost-publish
 ====
 
-When setting up this directory, be sure to include an .env file
+`ghost_publish` is a python package that provides scripts and nbconvert support to the Ghost blog.  These tools facilitate access to the admin API, specifically when publishing posts.
+
+
+setup
+----
+
+When setting things up, you'll likely need to set a few environment variables:
 
   GHOST_ADMIN_API_KEY=<ghost_admin_api_key>
-  GHOST_DATA_PATH=${HOME}/Workspace/repos/ghost-data
-  GHOST_PUBLISH_PATH=${HOME}/Workspace/repos/ghost-publish
-  JUPYTER_DATA_DIR=/home/dnlennon/.local/share/jupyter
+  GHOST_ADMIN_API_URL=<ghost_admin_api_url>
+
+  # PYTHONPATH includes the package source code and the site-packages; useful for external apps that might leverage a dotenv file.
+  GHOST_PUBLISH_PATH=<this directory>
   PYTHONPATH=${GHOST_PUBLISH_PATH}/src:${GHOST_PUBLISH_PATH}/.venv/lib/python3.11/site-packages
 
-and copy `~/Workspace/vscode_repl.pth` file into the virtualenv site-packages directory.  This will ensure that pipenv has access to the shared jupyter libraries.
+I have a shared jupyter / ipython installation on my dev machine that loads up dotenv files when available.  For those, as well as vscode, copying the `~/Workspace/vscode_repl.pth` file into the virtualenv site-packages directory means that these applications will augment PYTHONPATH accordingly.
 
-Create a symbolic link in `~/local/share/jupyter/nbconvert/templates` that links to the ghost template.
-
-Build the ghost-publish package.  `pipenv run python3 -m build src`.  This sets up the entry point for jupyter nbconvert.
-
-Install an editable package `pipenv run pip install -e src`; uninstall by deleting the egg directory.
-
-<!-- Running
-====
-
-As a script
-
-```bash
-pipenv run python3 -m ghost_publish.publish
-```
+    # vscode_repl.pth
+    ${HOME}/.local/share/virtualenvs/python3.11-qW6omolQ/lib/python3.11/site-packages
 
 
-From the command line
+Create a symbolic link in `${HOME}/local/share/jupyter/nbconvert/templates` that links to the ghost template.  You may also need to link `base` in the same subdirectory.
 
-```bash
-GHOST_DATA_PATH="/home/dnlennon/Workspace/repos/ghost-data" \
-GHOST_ADMIN_API_URL="https://dlennon.org/posts/ghost/api/admin/posts/?source=html" \
-  jupyter nbconvert \
-  --to ghost \
-  --Application.log_level=10 \
-  --NbConvertApp.output_files_dir=${GHOST_DATA_PATH}/staging/notebooks \
-  --NbConvertApp.writer_class=ghost_publish.ghost_writer.GhostWriter \
-  --TagRemovePreprocessor.enabled=True \
-  --TagRemovePreprocessor.remove_cell_tags=preamble \
-  --TagRemovePreprocessor.remove_cell_tags=comment \
-  --RegexSubPreprocessor.enabled=True \
-  --RegexSubPreprocessor.pattern="\{icon=.*\}" \
-  --GhostHTMLExporter.code_injection_head_paths=./resources/bpp_custom_tex.html \
-  ${GHOST_DATA_PATH}/staging/notebooks/bayesian_point_processes.ipynb
+Install the ghost-publish `pipenv install -e src`; uninstalling may require deleting the egg directory.
 
-```
-
-
-### copy and paste
-
-```bash
-export NOTEBOOK="/home/dnlennon/Workspace/repos/ghost-data/staging/notebooks/hessenberg.ipynb"
-GHOST_ADMIN_API_URL="https://dlennon.org/posts/ghost/api/admin/posts/?source=html" \
-  jupyter nbconvert \
-  --to ghost \
-  --Application.log_level=10 \
-  --NbConvertApp.writer_class=ghost_publish.ghost_writer.GhostWriter \
-  --TagRemovePreprocessor.enabled=True \
-  --TagRemovePreprocessor.remove_cell_tags=preamble \
-  --TagRemovePreprocessor.remove_cell_tags=comment \
-  --RegexSubPreprocessor.enabled=True \
-  --RegexSubPreprocessor.pattern="\{icon=.*\}" \
-  $NOTEBOOK
-
-``` -->

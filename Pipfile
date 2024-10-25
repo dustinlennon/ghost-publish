@@ -9,6 +9,7 @@ requests = "*"
 pyjwt = "*"
 setuptools = "*"
 pandocfilters = "*"
+ghost-publish = {file = "src", editable = true}
 
 [dev-packages]
 

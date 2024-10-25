@@ -1,0 +1,3 @@
+# modify as needed and save as ".env"
+GHOST_PUBLISH_PATH=<path to this directory>
+PYTHONPATH=${GHOST_PUBLISH_PATH}/src:${GHOST_PUBLISH_PATH}/.venv/lib/python3.11/site-packages
