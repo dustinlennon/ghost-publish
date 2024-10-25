@@ -1,4 +1,3 @@
-#!/usr/bin/env -S PIPENV_PIPFILE=/home/dnlennon/Workspace/repos/ghost-publish/Pipfile pipenv run python3
 from pandocfilters import toJSONFilters, Image
 import os
 import hashlib
@@ -20,9 +19,10 @@ def prep_image(src, src_pth, rpath):
     with open(dst_file, "wb") as f:
         f.write(data)
 
-    link_rpath = os.path.join(rpath, f"{md5}{ext}")
+    # an absolute path
+    link_abspath = os.path.join("/ghost-assets", rpath, f"{md5}{ext}")
 
-    return link_rpath
+    return link_abspath
 
 def action(key, value, format, meta):
     if key == 'Image':
@@ -53,13 +53,15 @@ def cleanup(key, value, format, meta):
 #         meta['dumped'] = True
 #     return None
 
+def main():
+  toJSONFilters([action, cleanup])
+
 
 if __name__ == '__main__':
   """
   pandoc --filter ~/Workspace/repos/ghost-publish/src/ghost_publish/pandoc/postprocess.py \
     --metadata=rpath:/foo/bar/20131001_olcp \
     --metadata=src_pth:$(pwd) \
-    20131001_olcp.html
-  
+    20131001_olcp.html 
   """
-  toJSONFilters([action, cleanup])
+  main()

@@ -16,6 +16,8 @@ Create a symbolic link in `~/local/share/jupyter/nbconvert/templates` that links
 
 Build the ghost-publish package.  `pipenv run python3 -m build src`.  This sets up the entry point for jupyter nbconvert.
 
+Install an editable package `pipenv run pip install -e src`; uninstall by deleting the egg directory.
+
 <!-- Running
 ====
 

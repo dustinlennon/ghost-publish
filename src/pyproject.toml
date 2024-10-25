@@ -14,3 +14,7 @@ requires = [
 ]
 build-backend = "setuptools.build_meta"
 
+[project.scripts]
+ghostpub-relink-filter = "ghost_publish.scripts.relink_image_filter:main"
+ghostpub-split-yaml = "ghost_publish.scripts.split_yaml:main"
+ghostpub-post = "ghost_publish.scripts.publish:main"
