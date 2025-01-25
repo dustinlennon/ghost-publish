@@ -10,20 +10,36 @@ setup
 
 When setting things up, you'll likely need to set a few environment variables:
 
-    GHOST_ADMIN_API_KEY=<ghost_admin_api_key>
-    GHOST_ADMIN_API_URL=<ghost_admin_api_url>
+    <!-- GHOST_ADMIN_API_KEY=<ghost_admin_api_key>
+    GHOST_ADMIN_API_URL=<ghost_admin_api_url> -->
 
     # PYTHONPATH includes the package source code and the site-packages; useful for external apps that might leverage a dotenv file.
     GHOST_PUBLISH_PATH=<this directory>
     PYTHONPATH=${GHOST_PUBLISH_PATH}/src:${GHOST_PUBLISH_PATH}/.venv/lib/python3.11/site-packages
 
-I have a shared jupyter / ipython installation on my dev machine that loads up dotenv files when available.  For those, as well as vscode, copying the `~/Workspace/vscode_repl.pth` file into the virtualenv site-packages directory means that these applications will augment PYTHONPATH accordingly.
 
-    # vscode_repl.pth
-    ${HOME}/.local/share/virtualenvs/python3.11-qW6omolQ/lib/python3.11/site-packages
+Install the ghost-publish `PIPENV_VENV_IN_PROJECT=True pipenv install -e src`; uninstalling may require deleting the egg directory.
 
 
-Create a symbolic link in `${HOME}/local/share/jupyter/nbconvert/templates` that links to the ghost template.  You may also need to link `base` in the same subdirectory.
+markdown support
+----
 
-Install the ghost-publish `pipenv install -e src`; uninstalling may require deleting the egg directory.
+If pandoc is installed, this should work out of the box.
 
+
+jupyter notebook support
+----
+
+Install the ghost templates in a jupyter "data" path:
+
+```bash
+package_dir=$(pwd)
+template_dir=$(jupyter --data-dir)/nbconvert/templates/ghost
+mkdir -p $template_dir
+ln -s \
+    ${package_dir}/src/ghost_publish/nbconvert/templates/ghost/ghost.html.j2 \
+    ${template_dir}/ghost.html.j2
+ln -s \
+    ${package_dir}/src/ghost_publish/nbconvert/templates/ghost/index.html.j2 \
+    ${template_dir}/index.html.j2
+```

@@ -6,13 +6,13 @@ name = "pypi"
 [packages]
 build = "*"
 requests = "*"
-pyjwt = "*"
+PyJWT = "*"
 setuptools = "*"
 pandocfilters = "*"
+pyyaml = "*"
 ghost-publish = {file = "src", editable = true}
 
 [dev-packages]
 
 [requires]
 python_version = "3.11"
-python_full_version = "3.11.10"
